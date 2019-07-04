@@ -11,36 +11,36 @@ import java.util.Collection;
 
 @RestController
 @RequestMapping("/api/books")
-public class RestBookController {
+public class BookRestController {
 
     private final BookRepository repository;
 
     @Autowired
-    public RestBookController(BookRepository repository) {
+    public BookRestController(BookRepository repository) {
         this.repository = repository;
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     public ResponseEntity<?> addBook(@RequestBody Book book) {
         return new ResponseEntity<>(repository.save(book), HttpStatus.CREATED);
     }
 
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public ResponseEntity<Collection<Book>> getAllBooks() {
         return new ResponseEntity<>(repository.findAll(), HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.GET, value = "/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Book> getBookWithId(@PathVariable Long id) {
         return new ResponseEntity<>(repository.findOne(id), HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.GET, params = {"name"})
+    @GetMapping(params = {"name"})
     public ResponseEntity<Collection<Book>> findBookWithName(@RequestParam(value = "name") String name) {
         return new ResponseEntity<>(repository.findByName(name), HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.PUT, value = "/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<Book> updateBookFromDb(@PathVariable("id") Long id, @RequestBody Book book) {
         Book currentBook = repository.findOne(id);
         currentBook.setName(book.getName());
@@ -50,7 +50,12 @@ public class RestBookController {
         return new ResponseEntity<>(repository.save(currentBook), HttpStatus.OK);
     }
 
-    @RequestMapping(method = RequestMethod.DELETE)
+    @DeleteMapping("/{id}")
+    public void deleteBookWithId(@PathVariable Long id) {
+        repository.delete(id);
+    }
+
+    @DeleteMapping
     public void deleteAllBooks() {
         repository.deleteAll();
     }
